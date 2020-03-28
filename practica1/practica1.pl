@@ -1,10 +1,7 @@
-#!/usr/bin/env ciao-shell
-% -*- mode: ciao; -*-
 
-
-:- use_module(library(stream_utils)).
-:- use_module(library(write)).
-:- use_module(library(lists)).
+alumno_prode('Vallejo','Collados','Jesus','X150319').
+alumno_prode('Rubio','Martin','Roberto','w140035').
+alumno_prode('Montanez','Soria','Diego','X150336').
 
 nat(0).               
 nat(s(X)) :- nat(X).
@@ -108,7 +105,7 @@ column_aux([X|Y],N,C):-column_aux(Y,N,I),level(X,N,Cs),append1(I,Cs,C).
 
 
 
-%--------------------------- colums predicate ----------------------------------    no funciona
+%--------------------------- colums predicate ----------------------------------    funciona
 columns(X,C):-level(X,s(0),F),my_length(F,P),columns_aux(X,0,P,K),naive_reverse(K,C).
 columns_aux(X,N,N,C).
 columns_aux(X,N,P,C):-suma(N,s(0),K),columns_aux(X,K,P,I),column(X,K,O),append1(I,O,C).
@@ -128,11 +125,13 @@ total_people_rec([X|Y],T):-total_people_rec(Y,O),suma(O,X,T).
 
 
 %-----------------------------------------------  average predicate -----------------
+total_house([],T).
+total_house([X|P],T):- total_house(P,O),my_length(X,S),suma(O,S,T).
 
+%total_house([[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]],T).
 
-
-
-
+%average(X,A):-total_people(X,J),total_house(X,K),average_aux(J,K,C),igual(A,C).
+%average_aux(J,K,C):- average_aux(D,K,C),suma(D,K,J),suma(Y,s(0),C),
 
 
 %-----------------------------------------------------------------------------------
