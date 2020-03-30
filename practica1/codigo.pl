@@ -85,7 +85,7 @@ basic_building_comp([Z|C],K):-nat(Z),basic_building_comp(C,K). % write_string("i
 % basic_building([s(0)]).no
 % basic_building(s(0)).no
 :- test basic_building(X) : (X = [[s(0)],[0]]) => not_fails.
-:- test basic_building(X) : (X = [s(0),0],[0,s(0)]]) => not_fails .
+:- test basic_building(X) : (X = [[s(0),0],[0,s(0)]]) => not_fails .
 :- test basic_building(X) : (X = [[s(0),s(s(s(0)))],[0,s(s(0))]]) => not_fails .
 :- test basic_building(X) : (X = [[0]]) => not_fails .
 :- test basic_building(X) : (X = [[0],0]) => fails .
@@ -110,9 +110,9 @@ level_aux([X|Y],N,C):-igual(N,s(0)),igual(C,X);(suma(Z,s(0),N),level1(Y,Z,C)).
 % X=[[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ],level(X, s(s(0)), C). C=[ 0, s(s(0)) ]
 % level([[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ], s(0), C).  C= [ s(0), s(s(s(0)))]
 % level([[ s(0), s(s(s(0))) ], [ 0, s(s(0)),s(s(0))],[ s(0), s(0)]], s(s(s(0))), C). no
-:- test level(X,N,C) : (X = [[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ]) => (C = [ 0, s(s(0)) ]) + not_fails.
-:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]]) => (C = [ s(0), s(s(s(0)))]) + not_fails.
-:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]]) => fails.
+:- test level(X,N,C) : (X = [[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ],N=s(s(0))) => (C = [ 0, s(s(0)) ]) + not_fails.
+:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]],N=s(0)) => (C = [ s(0), s(s(s(0)))]) + not_fails.
+:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]],N= s(s(s(0))) ) => (C=0)+fails.
 %-----------------------------------------------------------------------------------------------
 %--------------------------  column predicate --------------------------------------------------- funciona
 column(X,N,C):-building(X),column_aux(X,N,K),naive_reverse(K,C).
