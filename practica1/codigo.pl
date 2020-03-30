@@ -1,4 +1,5 @@
-:-module(_,_,[assertions]).
+:- module(_,_,[assertions]).
+:- use_module(library(unittest)).
 
 alumno_prode('Vallejo','Collados','Jesus','X150319').
 alumno_prode('Rubio','Martin','Roberto','w140035').
@@ -83,11 +84,24 @@ basic_building_comp([Z|C],K):-nat(Z),basic_building_comp(C,K). % write_string("i
 % basic_building([[s(0)],s(0)]). no
 % basic_building([s(0)]).no
 % basic_building(s(0)).no
+:- test basic_building(X) : (X = [[s(0)],[0]]) => not_fails.
+:- test basic_building(X) : (X = [s(0),0],[0,s(0)]]) => not_fails .
+:- test basic_building(X) : (X = [[s(0),s(s(s(0)))],[0,s(s(0))]]) => not_fails .
+:- test basic_building(X) : (X = [[0]]) => not_fails .
+:- test basic_building(X) : (X = [[0],0]) => fails .
+:- test basic_building(X) : (X = [0]) => fails .
+:- test basic_building(X) : (X = 0) => fails .
+:- test basic_building(X) : (X = [[s(0)],s(0)]) => fails .
+:- test basic_building(X) : (X = [s(0)]) => fails .
+:- test basic_building(X) : (X = s(0)) => fails .
+
 %------------------------- building type ----------------------------------  funciona
 building(X):-basic_building(X),checkLength(X).
 %------------------------ building predicate tests ---------------------------
 % building([[0,s(0)],[0,0],[s(0),0],[0,0]]). yes
 % building([[0,s(0)],[0,0],[s(0),0],[0]]).   no
+:- test building(X) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]]) => not_fails.
+:- test building(X) : (X = [[0,s(0)],[0,0],[s(0),0],[0]]) => fails.
 %--------------------------  level predicate ---------------------------------------------------   funciona
 level(X,N,C):- building(X),level1(X,N,A),igual(A,C).
 level1(X,N,C):-level_aux(X,N,K),igual(C,K).
@@ -96,6 +110,9 @@ level_aux([X|Y],N,C):-igual(N,s(0)),igual(C,X);(suma(Z,s(0),N),level1(Y,Z,C)).
 % X=[[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ],level(X, s(s(0)), C). C=[ 0, s(s(0)) ]
 % level([[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ], s(0), C).  C= [ s(0), s(s(s(0)))]
 % level([[ s(0), s(s(s(0))) ], [ 0, s(s(0)),s(s(0))],[ s(0), s(0)]], s(s(s(0))), C). no
+:- test level(X,N,C) : (X = [[ s(0), s(s(s(0))) ], [ 0, s(s(0)) ] ]) => (C = [ 0, s(s(0)) ]) + not_fails.
+:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]]) => (C = [ s(0), s(s(s(0)))]) + not_fails.
+:- test level(X,N,C) : (X = [[0,s(0)],[0,0],[s(0),0],[0,0]]) => fails.
 %-----------------------------------------------------------------------------------------------
 %--------------------------  column predicate --------------------------------------------------- funciona
 column(X,N,C):-building(X),column_aux(X,N,K),naive_reverse(K,C).
@@ -103,6 +120,7 @@ column_aux([],N,C).
 column_aux([X|Y],N,C):-column_aux(Y,N,I),levelN(X,N,Cs),append1(I,Cs,C).
 %--------------------------  test column predicate ---------------------------------------------------
 % column([[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]],s(s(0)),C).
+:- test column(X,N,C) : (X = [[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]], N = s(s(0))) => (C = [ s(s(s(0))),s(s(0)),s(s(0)),s(s(0))]) + not_fails.
 %-----------------------------------------------------------------------------------------------
 %--------------------------- colums predicate ----------------------------------    funciona
 columns(X,C):-building(X),level(X,s(0),F),my_length(F,P),columns_aux(X,0,P,K),naive_reverse(K,C).
@@ -110,6 +128,7 @@ columns_aux(X,N,N,C).
 columns_aux(X,N,P,C):-suma(N,s(0),K),columns_aux(X,K,P,I),columnN(X,K,O),append1(I,O,C).
 %--------------------------  test columns predicate ---------------------------------------------------
 % columns([[ s(0),s(s(s(0)))],[s(0),s(s(0))]],C).
+:- test columns(X,C) : (X = [[ s(0),s(s(s(0)))],[s(0),s(s(0))]]) => (C = [[ s(0),s(0)],[s(s(s(0))),s(s(0))] ]) + not_fails.
 %-----------------------------------------------------------------------------------------------
 %----------------------------------------------  total_people predicate --------------------------  funciona
 total_people(X,T):-building(X),total_people1(X,A),igual(A,T).
@@ -120,9 +139,17 @@ total_people_rec([X|Y],T):-total_people_rec(Y,O),suma(O,X,T).
 
 %--------------------------  test total_people predicate ---------------------------------------------------
 % total_people([[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]],C).
+:- test  total_people(X,T) : (X = [[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]]) => (T =  s(s(s(s(s(s(s(s(s(s(s(s(s(0)))))))))))))) + not_fails.
 %-----------------------------------------------------------------------------------------------
 %-----------------------------------------------  average predicate -----------------
 average(X,A):-building(X),total_people(X,J),total_house(X,K),divide(J,K,C),igual(A,C).
 %--------------------------  test average predicate ---------------------------------------------------
 %average([[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]],C).
+:- test  average(X,A) : (X = [[ s(0),s(s(s(0)))], [s(0),s(s(0))],[s(s(0)),s(s(0))],[0,s(s(0))]]) => (T =  s(0)) + not_fails.
+
 %-----------------------------------------------------------------------------------
+
+
+
+
+
